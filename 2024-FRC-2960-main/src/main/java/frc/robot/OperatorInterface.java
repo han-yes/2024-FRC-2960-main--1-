@@ -3,6 +3,7 @@ package frc.robot;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Arm.ArmState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -39,13 +40,10 @@ public class OperatorInterface extends SubsystemBase {
 
         if (DriverStation.isTeleop()) {
             boolean fieldRelative = !driverController.getRawButton(1);
-            
 
             double xSpeed = MathUtil.applyDeadband(driverController.getRawAxis(0), 0.1) * Constants.kMaxSpeed;
             double ySpeed = -MathUtil.applyDeadband(driverController.getRawAxis(1), 0.1) * Constants.kMaxSpeed;
-            double rSpeed =  MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1) * Constants.kMaxAngularSpeed;
-
-            
+            double rSpeed = MathUtil.applyDeadband(driverController.getRawAxis(4), 0.1) * Constants.kMaxAngularSpeed;
 
             Drive.get_instance().set_speed(xSpeed, ySpeed, rSpeed, fieldRelative);
             SmartDashboard.putNumber("ySpeed", ySpeed);
@@ -53,16 +51,19 @@ public class OperatorInterface extends SubsystemBase {
             SmartDashboard.putNumber("rSpeed", rSpeed);
             SmartDashboard.putBoolean("FieldRelative", fieldRelative);
 
-          /*   if (driverController.getRawAxis(5)<0.2 && driverController.getRawAxis(5)>-0.2){
-                rSpeed = 0;
+            /*
+             * if (driverController.getRawAxis(5)<0.2 &&
+             * driverController.getRawAxis(5)>-0.2){
+             * rSpeed = 0;
+             * }
+             */
+
+            // Arm Control
+            if (operatorController.getRawButton(0)) {
+                Arm.get_Arm().setState(ArmState.HOME);
             }
-            */
+
         }
-
-        // Arm Control
-      
-
-
 
     }
 

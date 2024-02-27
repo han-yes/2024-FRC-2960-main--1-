@@ -24,10 +24,6 @@ public class Constants {
     public final static int backRightAngleENC = 12;
 
     // Swerve PID values
-    public static double kpArm1 = 0;
-    public static double kiArm1 = 0;
-    public static double kdArm1 = 0;
-
     public static double driveSwerveP = 0.1;
     public static double driveSwerveI = 0;
     public static double driveSwerveD = 0;
@@ -75,11 +71,15 @@ public class Constants {
     public static double cameraYaw;
 
     //Arm
+    public static double kpArm1 = 0;
+    public static double kiArm1 = 0;
+    public static double kdArm1 = 0;
+    //TODO Test and change PID values
     public static final double maxArmPos = 0;
     public static final double minArmPos = 0;
     public static double maxArmSpeed;
     public static double maxArmAccel;
-
+    //TODO Test minimum and maximum values and find these
     public static final double homePos = 0;
     public static final double extendedHomePos = 0;
     public static final double speakerPos = 0;
@@ -87,7 +87,9 @@ public class Constants {
     public static final double climbPrepPos = 0;
     public static final double trapClimbPos = 0;
     public static final double trapScorePos = 0;
-
-    //TODO test and change these values
+    //TODO test these positions and put them in later
+    public static final double armSFF = 0;
+    public static final double armVFF = 0;
+    //TODO test and change Feed Forward values
 
 }

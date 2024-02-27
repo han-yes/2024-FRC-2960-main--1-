@@ -58,8 +58,8 @@ public class Arm extends SubsystemBase {
         absoluteArmEncoder = new DutyCycleEncoder(0);
 
         armPID = new PIDController(Constants.kpArm1, Constants.kiArm1, Constants.kdArm1);
-        // TODO Init FF
-
+        armFF = new SimpleMotorFeedforward(Constants.armSFF, Constants.armVFF);
+        //TODO Make this PID a Trapezoidal PID
         quadArmEncoder.setDistancePerPulse(360 / 4960);
         absoluteArmEncoder.setDistancePerRotation(360);
         // TODO Set abs encoder offset
@@ -95,17 +95,18 @@ public class Arm extends SubsystemBase {
         }
     }
 
-    public void setState(ArmState state){
+    public void setState(ArmState state) {
         targState = state;
     }
 
     public double calcSpeed(double cur, double tar) {
         double speed = 0;
-        if ((getCurrentPos().getDegrees() < Constants.maxArmPos) && (getCurrentPos().getDegrees() > Constants.minArmPos)) {
+        if ((getCurrentPos().getDegrees() < Constants.maxArmPos)
+                && (getCurrentPos().getDegrees() > Constants.minArmPos)) {
             double calcPID = armPID.calculate(cur, tar);
             double calcFF = armFeedForward.calculate(getVelocity());
             speed = calcPID + calcFF;
-        }else{
+        } else {
             speed = 0;
         }
         return speed;
@@ -118,6 +119,22 @@ public class Arm extends SubsystemBase {
         return arm;
     }
 
+    private void autoExtenderState(){
+        if (targState == ArmState.HOME || targState == ArmState.SPEAKER){
+            setExtender1(Value.kReverse);
+            setExtender2(Value.kReverse);
+        }else if(targState == ArmState.AMP || targState == ArmState.EXTENDEDHOME){
+            setExtender1(Value.kForward);
+            setExtender2(Value.kReverse);
+        }else if(targState == ArmState.CLIMBPREP || targState == ArmState.TRAPCLIMB){
+            setExtender1(Value.kReverse);
+            setExtender2(Value.kReverse);
+        }else if(targState == ArmState.TRAPSCORE){
+            setExtender1(Value.kForward);
+            setExtender2(Value.kForward);
+        }
+        //TODO Adjust which cylinders are activated after testing
+    }
     public void setExtender1(Value state) {
         armExtender1.set(state);
     }
@@ -138,8 +155,12 @@ public class Arm extends SubsystemBase {
      */
 
     @Override
-    public void periodic(){
-        
+    public void periodic() {
+        double target = getTargetPos(targState);
+        double speed = calcSpeed(getCurrentPos().getDegrees(), target);
+        armMotor1.set(speed);
+        armMotor2.set(-speed);
+        autoExtenderState();
     }
 
 }
